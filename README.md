@@ -1,5 +1,5 @@
 # Group-Assignment-Sem-1
-sem1 project yipieee !!!
+sem1 project yipieee !!!    (read in code form. idk how to make the preview look pretty)
 
 We are building a store management system with a Java frontend (JavaFX, Swing) and a Python backend (Flask). To fulfill the project specifications, a database named "store_management_system" was created in HeidiSQL, a MySQL-based DBMS, wherein queries are written and tested. A total of 11 tables have been created with the following attributes (important ones):
 
