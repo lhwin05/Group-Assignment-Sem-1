@@ -100,10 +100,3 @@ Feature                          Function
 11. Sales history         
     - 2 specific dates
     - sort                       by date, total bill, customer name
-
-To create GUI, first identify the user experience of the system (i.e. how should users interact with it through buttons and input fields)
-Frontend only handles user clicks and sends to backend. Don't worry about what happens in backend, only display what the user sees.
-
-Send data in JSON format (dictionary):
-{key1 : value1, key2 : value2, key3 : value3, ...}
-values can take any data type inlcuding lists, tuples 
