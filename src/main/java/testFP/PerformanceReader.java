@@ -90,32 +90,6 @@ public class PerformanceReader {
         return count; 
     }
     
-    private String employeeOutlet(String employeeID) {
-        try {
-            Scanner read = new Scanner(new FileInputStream("Transaction.csv"));
-            boolean headerLine = true;
-            
-            while (read.hasNextLine()) {
-                String line = read.nextLine();
-                
-                if (headerLine) {
-                    headerLine = false;
-                    continue;
-                }
-                
-                String [] outletInfo = line.split(",");
-                if (employeeID.equals(outletInfo[1])) {
-                    return outletInfo[7];
-                }
-            }
-            read.close();
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("File not found.");
-        }
-        return null;
-    }
-    
     public EmployeePerformance [] getAllEmployeePerformance() {
         String [] employeeIDs = new String [100];
         String [] employeeNames = new String [100];
@@ -127,10 +101,9 @@ public class PerformanceReader {
         for (int i = 0; i < employeeCount; i++) {
             double totalSales = calculateTotalSales(employeeIDs[i]);
             int transactionCount = countTransactions(employeeIDs[i]); 
-            String outlet = employeeOutlet(employeeIDs[i]);
             
             if (transactionCount > 0) {
-                performance[performanceCount] = new EmployeePerformance(employeeIDs[i], employeeNames[i], totalSales, transactionCount, outlet); 
+                performance[performanceCount] = new EmployeePerformance(employeeIDs[i], employeeNames[i], totalSales, transactionCount); 
                 performanceCount++; 
             }
         }

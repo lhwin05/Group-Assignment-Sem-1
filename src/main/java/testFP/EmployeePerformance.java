@@ -8,14 +8,12 @@ public class EmployeePerformance {
     private String employeeName;
     private double totalSales;
     private int transactionCount; 
-    private String outlet;
     
-    public EmployeePerformance(String employeeID, String employeeName, double totalSales, int transactionCount, String outlet) {
+    public EmployeePerformance(String employeeID, String employeeName, double totalSales, int transactionCount) {
         this.employeeID = employeeID;
         this.employeeName = employeeName;
         this.totalSales = totalSales;
         this.transactionCount = transactionCount; 
-        this.outlet = outlet; 
     }
     
     //getters
@@ -23,6 +21,4 @@ public class EmployeePerformance {
     public String getEmployeeName() { return employeeName; }
     public double getTotalSales() { return totalSales; }
     public int getTransactionCount() { return transactionCount; }
-    public String getOutlet() { return outlet; }
-    
 }
