@@ -1,0 +1,11 @@
+=================================
+         SALES RECEIPT            
+=================================
+Transaction ID : 101
+Date           : 09/01/2026
+Time           : 20:15:53
+Customer       : ella
+Payment Method : cash
+Total (RM)     : 838.00
+=================================
+
