@@ -1,0 +1,33 @@
+=================================
+         SALES RECEIPT            
+=================================
+Transaction ID : 101
+Date           : 2026/01/10
+Time           : 10:35:30
+Customer       : 
+Payment Method : Credit Card
+Total (RM)     : 1766.00
+=================================
+
+=================================
+         SALES RECEIPT            
+=================================
+Transaction ID : 101
+Date           : 2026-01-10
+Time           : 11:00:45
+Customer       : Kenji
+Payment Method : Credit Card
+Total (RM)     : 1456.00
+=================================
+
+=================================
+         SALES RECEIPT            
+=================================
+Transaction ID : 101
+Date           : 2026-01-10
+Time           : 11:12:23
+Customer       : Hon Win
+Payment Method : Credit Card
+Total (RM)     : 1779.00
+=================================
+

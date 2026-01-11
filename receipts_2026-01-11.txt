@@ -1,0 +1,9 @@
+=== Stock In ===
+Date: 2026-01-11
+Time: 01:30 am
+From: KLCC
+To: Lot_10
+Models: - DW-5750 (Quantity: 8) - GA-2100 (Quantity: 6) 
+Total Quantity: 14
+Employee ID: C1001
+------------------------------------------------
