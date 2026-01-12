@@ -49,7 +49,7 @@ public class PerformanceReader {
                 
                 String [] salesInfo = line.split(",");
                 if (employeeID.equals(salesInfo[1])) {
-                    total += Double.parseDouble(salesInfo[8]);
+                    total += Double.parseDouble(salesInfo[9]);
                 }
             }
             read.close();
