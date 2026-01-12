@@ -38,12 +38,11 @@ public class LoginMain {
                 // 2. Main menu
                 while (!logOut) {
                     if (current.isManager()) {
-                        managerOptions(input); 
+                        managerOptions(input, current); 
                         System.out.println();
                     }
                     else {
-                        otherOptions();
-                        executeOptions(input, current);
+                        otherOptions(input, current);
                         System.out.println();
                     }
                     // 3. Logging out
@@ -53,14 +52,13 @@ public class LoginMain {
         } while (loginAnswer.equalsIgnoreCase("Y"));
     }
     
-    private void managerOptions(Scanner input) {
+    private void managerOptions(Scanner input, CurrentEmployee current) {
         System.out.println("Would you like to: ");
         System.out.println("1. Register New Employee");
         System.out.println("2. View Employee Performance Report");
         System.out.println("3. Others");
         System.out.println("Select option: ");
         int choice = input.nextInt();
-        input.nextLine(); 
         System.out.println();
         
         switch (choice) {
@@ -71,12 +69,12 @@ public class LoginMain {
                 performanceReport.display();
                 break;
             case 3:
-                otherOptions(); 
+                otherOptions(input, current); 
                 break; 
         }
     }
     
-    private void otherOptions() {
+    private void otherOptions(Scanner input, CurrentEmployee current) {
         System.out.println("Would you like to: ");
         System.out.println("1. Clock In / Clock Out");
         System.out.println("2. Stock Management");
@@ -85,9 +83,7 @@ public class LoginMain {
         System.out.println("5. Edit Information");
         System.out.println("6. View Data Analytics");
         System.out.println("7. Filter and Sort Sales History");
-    }
 
-    private void executeOptions(Scanner input, CurrentEmployee current){
         int choice = input.nextInt();
         input.nextLine();
         switch (choice){
