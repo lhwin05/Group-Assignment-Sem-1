@@ -92,6 +92,7 @@ public class LoginMain {
                 break;
             case 2: 
                 StockManagement.main_menu(input, current);
+                break;
             case 3:
                 sale.recordSale(input, current);      
                 break;
