@@ -6,25 +6,46 @@ import java.util.*;
 
 public class StockManagement {
 
-    public static void main_menu(Scanner sc, CurrentEmployee current){
-        System.out.println("=== Stock Management ===\n");
-        System.out.println("1. Stock Transfer ");
-        System.out.println("2. Stock Count ");
-        int choice;
-        while (true){
-            choice = Integer.parseInt(sc.nextLine());
-            if (choice!=1 && choice!=2) {System.out.println("Invalid input! "); continue;}
-            break;
-        }
-        switch (choice){
-            case 1:
-                stockTransfer(sc, current);
-                break;
-            case 2:
-                stockCount(sc);
-                break;
+    
+    public static void main_menu(Scanner sc, CurrentEmployee current) {
+        
+        
+        while (true) {
+            System.out.println("");
+            System.out.println("\n=== Stock Management ===");
+            System.out.println("1. Stock Transfer");
+            System.out.println("2. Stock Count");
+            System.out.println("3. Back to Main Menu"); // Added exit option
+
+            int choice;
+            while (true) {
+                try {
+                    System.out.print("Enter choice: ");
+                    // Fixed: Use parsed line to prevent skipping inputs
+                    choice = Integer.parseInt(sc.nextLine().trim());
+                    if (choice < 1 || choice > 3) {
+                        System.out.println("Invalid input! Enter 1, 2, or 3.");
+                        continue;
+                    }
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a number.");
+                }
+            }
+
+            switch (choice) {
+                case 1:
+                    stockTransfer(sc, current);
+                    break;
+                case 2:
+                    stockCount(sc);
+                    break;
+                case 3:
+                    return; // This returns the user to your "Record New Sale" / Main Menu
+            }
         }
     }
+
     // 1. Stock count
     private static void stockCount(Scanner sc) {
         LocalTime time = LocalTime.now();
@@ -36,106 +57,133 @@ public class StockManagement {
         int totalTally = 0;
         int totalCheck = 0;
 
-        try{
-            int outlet_choice;
-            while (true){
-                System.out.println("Outlet Location:");
-                System.out.println("1. KLCC     2. Lot_10");
-                outlet_choice = Integer.parseInt(sc.nextLine());
-                if (outlet_choice != 1 && outlet_choice != 2){System.out.println("Invalid input! "); continue;}
-                break;
-            }
-            String outlet = "";
-            switch (outlet_choice){
-                case 1:
+        String outlet = "";
+        while (true) {
+            System.out.println("\nOutlet Location:");
+            System.out.println("1. KLCC     2. Lot_10");
+            try {
+                int outlet_choice = Integer.parseInt(sc.nextLine().trim());
+                if (outlet_choice == 1) {
                     outlet = "KLCC";
                     break;
-                case 2:
+                } else if (outlet_choice == 2) {
                     outlet = "Lot_10";
                     break;
-            }
-
-            String countType = "";
-
-            while (true) {
-                System.out.println("Morning OR Night Stock Count");
-                countType = sc.nextLine();
-
-                if (countType.equalsIgnoreCase("Morning")) {
-                    countType = "Morning";
-                    break;
-                } else if (countType.equalsIgnoreCase("Night")) {
-                    countType = "Night";
-                    break;
                 } else {
-                    System.out.println("Try again.\n");
+                    System.out.println("Invalid input!");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number.");
+            }
+        }
+
+        String countType = "";
+        while (true) {
+            System.out.println("Morning OR Night Stock Count?");
+            countType = sc.nextLine().trim();
+
+            if (countType.equalsIgnoreCase("Morning")) {
+                countType = "Morning";
+                break;
+            } else if (countType.equalsIgnoreCase("Night")) {
+                countType = "Night";
+                break;
+            } else {
+                System.out.println("Try again (Type 'Morning' or 'Night').");
+            }
+        }
+
+        System.out.println("\n=== " + countType + " Stock Count ===");
+        System.out.println("Date: " + date.format(dateForm));
+        System.out.println("Time: " + time.format(timeForm));
+
+        File file = new File("Inventory.csv");
+        if (!file.exists()) {
+            System.out.println("Inventory.csv not found!");
+            return;
+        }
+
+        try (Scanner ScanInventory = new Scanner(file)) {
+            if (!ScanInventory.hasNextLine()) return;
+
+            
+            String headerLine = ScanInventory.nextLine();
+            String[] headers = headerLine.split(",");
+            int outletIndex = -1;
+
+            for (int i = 0; i < headers.length; i++) {
+                if (headers[i].trim().equalsIgnoreCase(outlet)) {
+                    outletIndex = i;
+                    break;
                 }
             }
 
-            // Header
-            System.out.println("=== " + countType + " Stock Count ===");
-            System.out.println("Date: " + date.format(dateForm));
-            System.out.println("Time: " + time.format(timeForm));
-
-            File file = new File("Inventory.csv");
-            try (Scanner ScanInventory = new Scanner(file)) {
-                if (ScanInventory.hasNextLine()) {
-                    ScanInventory.nextLine();
-                }
-
-                while (ScanInventory.hasNextLine()) {
-                    String line = ScanInventory.nextLine();
-                    String[] parts = line.split(",");
-                    
-                    int stockCount = 0;
-                    String id = parts[0];
-                    int Lot_10 = Integer.parseInt(parts[1].trim());
-                    int KLCC = Integer.parseInt(parts[2].trim());
-
-                    if (outlet.equals("Lot_10")) {
-                        stockCount = Lot_10;
-                    } else if (outlet.equals("KLCC")) {
-                        stockCount = KLCC;
-                    } else {
-                        System.out.println("Invalid Location.");
-                        return; 
-                    }
-
-                    System.out.print("Model: " + id + " -- Counted: ");
-                    
-                    int counted = Integer.parseInt(sc.nextLine());
-
-                    if (counted == stockCount) {
-                        System.out.println("Store Record: " + stockCount);
-                        System.out.println("Stock tally correct.\n");
-                        totalTally++;
-                    } else {
-                        System.out.println("Store Record: " + stockCount);
-                        int diff = Math.abs(counted - stockCount);
-                        System.out.println("! Mismatch detected (" + diff + " unit difference.)\n");
-                        totalMiss++;
-                    }
-                    totalCheck++;
-                }
-
-                System.out.println("Total Models Checked: " + totalCheck);
-                System.out.println("Tally Correct: " + totalTally);
-                System.out.println("Mismatches: " + totalMiss);
-                System.out.println(countType + " stock count completed.");
-
-                if (totalMiss > 0) {
-                    System.out.println("Warning: Please verify stock.");
-                }
+            if (outletIndex == -1) {
+                System.out.println("Error: Outlet '" + outlet + "' not found in CSV headers.");
+                return;
             }
+
+            while (ScanInventory.hasNextLine()) {
+                String line = ScanInventory.nextLine();
+                if (line.trim().isEmpty()) continue; // Skip empty lines
+
+                String[] parts = line.split(",");
+                if (parts.length <= outletIndex) continue; // Skip malformed lines
+
+                String id = parts[0];
+                int stockRecord = 0;
+                
+                try {
+                    stockRecord = Integer.parseInt(parts[outletIndex].trim());
+                } catch (NumberFormatException e) {
+                    continue; // Skip lines with bad number data
+                }
+
+                System.out.print("Model: " + id + " -- Counted: ");
+                int counted = 0;
+                
+                try {
+                    String input = sc.nextLine().trim();
+                    if (input.equalsIgnoreCase("stop")) break;
+                    counted = Integer.parseInt(input);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid number, skipping item.");
+                    continue;
+                }
+
+                if (counted == stockRecord) {
+                    System.out.println("Store Record: " + stockRecord);
+                    System.out.println("Status: Correct\n");
+                    totalTally++;
+                } else {
+                    System.out.println("Store Record: " + stockRecord);
+                    int diff = Math.abs(counted - stockRecord);
+                    System.out.println("! Mismatch detected (" + diff + " unit difference.)\n");
+                    totalMiss++;
+                }
+                totalCheck++;
+            }
+
+            System.out.println("Total Models Checked: " + totalCheck);
+            System.out.println("Tally Correct: " + totalTally);
+            System.out.println("Mismatches: " + totalMiss);
+            System.out.println(countType + " stock count completed.");
+
+            if (totalMiss > 0) {
+                System.out.println("Warning: Please verify stock.");
+            }
+            
+            // Wait for user before returning to menu
+            System.out.println("Press Enter to return to menu...");
+            sc.nextLine();
+
         } catch (IOException e) {
-            System.out.println("File not found or access error.");
-        } catch (NumberFormatException e) {
-            System.out.println("Error: The CSV file contains non-numeric stock data.");
+            System.out.println("File error.");
         }
     }
 
     // 2. Stock transfer
-    private static void stockTransfer(Scanner sc, CurrentEmployee current){
+    private static void stockTransfer(Scanner sc, CurrentEmployee current) {
         LocalTime time = LocalTime.now();
         DateTimeFormatter timeForm = DateTimeFormatter.ofPattern("hh:mm a");
         LocalDate date = LocalDate.now();
@@ -143,9 +191,8 @@ public class StockManagement {
         
         String transType = "";
 
-        //Option for Stock in Stock Out
         while (true) {
-            System.out.println("Stock In or Stock Out?");
+            System.out.println("Stock In (In) or Stock Out (Out)? Type 'Back' to cancel.");
             String input = sc.nextLine().trim();
 
             if (input.equalsIgnoreCase("Stock In") || input.equalsIgnoreCase("In")) {
@@ -154,19 +201,17 @@ public class StockManagement {
             } else if (input.equalsIgnoreCase("Stock Out") || input.equalsIgnoreCase("Out")) {
                 transType = "Stock Out";
                 break;
+            } else if (input.equalsIgnoreCase("Back")) {
+                return;
             } else {
-                System.out.println("Invalid option. Please type 'Stock In' or 'Stock Out'.");
+                System.out.println("Invalid option.");
             }
         }
         
-        //Details
-        System.out.println("");
-        System.out.println("=== " + transType + " ===");
-        System.out.println("Date: " + date.format(dateForm));
-        System.out.println("Time: " + time.format(timeForm)); 
-        System.out.print("From: "); 
+        System.out.println("\n=== " + transType + " ===");
+        System.out.print("From (Outlet Name): "); 
         String fromOutlet = sc.nextLine().trim();
-        System.out.print("To: ");
+        System.out.print("To (Outlet Name): ");
         String toOutlet = sc.nextLine().trim();
 
         List<String> products = new ArrayList<>();
@@ -177,67 +222,60 @@ public class StockManagement {
             System.out.print("Enter Product ID (Type 'STOP' when done): ");
             String product_id = sc.nextLine().trim();
             if (product_id.equalsIgnoreCase("STOP")) break;
+            if (product_id.isEmpty()) continue;
 
             System.out.print("Quantity for " + product_id + ": ");
             int quantity = 0;
             
             try {
-                quantity = sc.nextInt();
+                quantity = Integer.parseInt(sc.nextLine().trim());
                 if (quantity <= 0) {
                     System.out.println("Quantity must be greater than 0.");
-                    sc.nextLine();
                     continue;
                 }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid number for quantity. Try again.");
-                sc.nextLine();
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number.");
                 continue;
             }
-            sc.nextLine(); 
 
-            // Update CSV file
             if (updateInventoryFile(product_id, fromOutlet, toOutlet, quantity)) {
                 products.add(product_id);
                 quantities.add(quantity);
                 totalQuantity += quantity;
-                System.out.println("Model quantities updated successfully.");
-                System.out.println(transType+" recorded.");
-                
+                System.out.println("Success.");
             } else {
-                System.out.println("Failed to update " + product_id + ". Check ID, Outlet Names, or Stock Level.");
+                System.out.println("Failed to update " + product_id + ". Check ID or Outlet names.");
             }
         }
         
-        // trivial case
         if (products.isEmpty()) {
-            System.out.println("No items processed. Exiting.");
+            System.out.println("No items processed.");
             return;
         }
 
-        System.out.println("Employee ID: ");
         String employee_id = current.getEmployeeID();
 
-        //Generate receipt
         String fileName = generateReceipt(date, time, timeForm, transType, fromOutlet, toOutlet, products, quantities, totalQuantity, employee_id);
 
-            if (fileName != null) {
-                System.out.println("Receipt generated: " + fileName);
-            }
+        if (fileName != null) {
+            System.out.println("Receipt generated: " + fileName);
+        }
+        System.out.println("Press Enter to return to menu...");
+        sc.nextLine();
     }
 
-    // 2. Update the csv file
+    // Update CSV Helper
     private static boolean updateInventoryFile(String product_id, String fromOutlet, String toOutlet, int quantity) {
         List<String> lines = new ArrayList<>();
         boolean IDFound = false;
 
-        try (BufferedReader br = new BufferedReader(new FileReader("Inventory.csv"))) {
+        File file = new File("Inventory.csv");
+        if (!file.exists()) return false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-        } catch (IOException e) {
-            return false;
-        }
+            while ((line = br.readLine()) != null) lines.add(line);
+        } catch (IOException e) { return false; }
 
         if (lines.isEmpty()) return false;
 
@@ -251,7 +289,7 @@ public class StockManagement {
         }
         
         if (fromIndex == -1 && toIndex == -1) {
-            System.out.println("Error: Neither 'From' nor 'To' outlets matched CSV headers.");
+            System.out.println("Error: Outlets not found in CSV header.");
             return false;
         }
 
@@ -264,22 +302,19 @@ public class StockManagement {
                     try {
                         int stock = Integer.parseInt(parts[fromIndex].trim());
                         if (stock < quantity) {
-                            System.out.println("Error: Insufficient stock in " + fromOutlet + " (Current: " + stock + ")");
+                            System.out.println("Insufficient stock in " + fromOutlet);
                             return false;
                         }
                         parts[fromIndex] = String.valueOf(stock - quantity);
-                    } catch (NumberFormatException e) {
-                        return false; 
-                    }
+                    } catch (Exception e) { return false; }
                 }
                 
                 if (toIndex != -1) {
                     try {
                         int stock = Integer.parseInt(parts[toIndex].trim());
                         parts[toIndex] = String.valueOf(stock + quantity);
-                    } catch (NumberFormatException e) {
-                        // if destination cell is empty or invalid, assume 0 start
-                        parts[toIndex] = String.valueOf(quantity);
+                    } catch (Exception e) { 
+                        parts[toIndex] = String.valueOf(quantity); 
                     }
                 }
                 lines.set(i, String.join(",", parts));
@@ -289,19 +324,16 @@ public class StockManagement {
 
         if (!IDFound) return false;
 
-        // write file
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("Inventory.csv"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             for (String line : lines) {
                 bw.write(line);
                 bw.newLine();
             }
-        } catch (IOException e) {
-            return false;
-        }
+        } catch (IOException e) { return false; }
         return true;
     }
 
-    // 3. Generate receipt
+    // Receipt Generator
     private static String generateReceipt(LocalDate date, LocalTime time, DateTimeFormatter timeForm,
                                         String type, String fromOutlet, String toOutlet, 
                                         List<String> products, List<Integer> quantities, int totalQuantity, String employee_id) {
@@ -310,23 +342,20 @@ public class StockManagement {
         
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName, true)))) {
             out.println("=== " + type + " ===");
-            out.println("Date: " + date);
-            out.println("Time: " + time.format(timeForm));
-            out.println("From: " + fromOutlet);
-            out.println("To: " + toOutlet);
-            out.print("Models: ");
+            out.println("Date: " + date + " " + time.format(timeForm));
+            out.println("From: " + fromOutlet + " -> To: " + toOutlet);
+            out.println("Employee: " + employee_id);
+            out.println("--------------------------------");
             for (int i = 0; i < products.size(); i++) {
-                out.print("- " + products.get(i) + " (Quantity: " + quantities.get(i) + ") ");
+                out.println("- " + products.get(i) + " (Qty: " + quantities.get(i) + ")");
             }
-            out.println();
-            out.println("Total Quantity: " + totalQuantity);
-            out.println("Employee ID: " + employee_id);
-            out.println("------------------------------------------------");
-        
+            out.println("--------------------------------");
+            out.println("Total Qty: " + totalQuantity);
+            out.println("================================");
+            out.println(); // Empty line
             return fileName;
-            
         } catch (IOException e) {
-            System.out.println("Receipt failed to generate.");
+            System.out.println("Receipt failed.");
             return null; 
         }
     }
