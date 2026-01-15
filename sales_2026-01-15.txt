@@ -1,0 +1,99 @@
+=== Transactions on 2026-01-15 ===
+
+=== Transaction ID: 102 ===
+
+Employee ID: C1010
+Date: 2026-01-15
+Time: 21:08:48
+Customer Name: Ling
+Payment Method: Credit Card
+Outlet: KLCC
+Model: DW-9052
+Quantity: 3
+Total: 750.0
+Model: BG-169
+Quantity: 1
+Total: 597.0
+Model: GA-700
+Quantity: 1
+Total: 417.0
+
+Grand Total: 1764.0
+
+=== Transaction ID: 103 ===
+
+Employee ID: C1010
+Date: 2026-01-15
+Time: 21:18:00
+Customer Name: Bubu
+Payment Method: E-wallet
+Outlet: Lot_10
+Model: BG-766
+Quantity: 2
+Total: 928.0
+Model: SKX-809
+Quantity: 1
+Total: 595.0
+
+Grand Total: 1523.0
+
+=== Transaction ID: 104 ===
+
+Employee ID: C1007
+Date: 2026-01-15
+Time: 21:43:55
+Customer Name: Colos
+Payment Method: Cash
+Outlet: Lot_10
+Model: DW-9052
+Quantity: 4
+Total: 1000.0
+
+Grand Total: 1000.0
+
+=== Transaction ID: 105 ===
+
+Employee ID: C1011
+Date: 2026-01-15
+Time: 21:50:54
+Customer Name: Hadyf
+Payment Method: Debit Card
+Outlet: Lot_10
+Model: BG-190
+Quantity: 1
+Total: 657.0
+
+Grand Total: 657.0
+
+=== Transaction ID: 106 ===
+
+Employee ID: C1011
+Date: 2026-01-15
+Time: 21:52:35
+Customer Name: Colos
+Payment Method: Credit Card
+Outlet: Lot_10
+Model: BG-766
+Quantity: 3
+Total: 1392.0
+
+Grand Total: 1392.0
+
+=== Transaction ID: 107 ===
+
+Employee ID: C1020
+Date: 2026-01-15
+Time: 21:53:58
+Customer Name: Boba
+Payment Method: Cash
+Outlet: Lot_10
+Model: SKX-809
+Quantity: 1
+Total: 595.0
+
+Grand Total: 595.0
+
+=== Summary ===
+
+Number of transactions: 6
+Total revenue: 6931.0
