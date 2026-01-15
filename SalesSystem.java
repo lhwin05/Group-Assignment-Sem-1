@@ -6,9 +6,9 @@ import java.util.Scanner;
 
 public class SalesSystem {
 
-    // pass employee_id?
     public void recordSale(Scanner input, CurrentEmployee current) {
         ArrayList<Transaction> transaction = Transaction.readCsv();
+        ArrayList<Inventory> inventory = Inventory.readCsv();
         final int current_transaction_id = transaction.getLast().get_transaction_id()+1;
 
         String employee_id = current.getEmployeeID();
@@ -33,6 +33,7 @@ public class SalesSystem {
         double subtotal = 0;
         ArrayList<Transaction> new_transaction = new ArrayList<>();
 
+        // Start transaction
         while (true) {
             System.out.print("\nEnter Model: ");
             String productID = input.nextLine();
@@ -47,19 +48,27 @@ public class SalesSystem {
 
             Transaction t = new Transaction(
                 current_transaction_id, 
-                employee_id,      // passed from login menu
+                employee_id,      
                 dateStr, 
                 timeStr, 
                 customer, 
                 productID, 
                 qty,
                 "",        
-                location,        // passed from login menu    
+                location,        
                 total);
             
-            // store temporary new transactions
+            // Store temporary new transactions
             new_transaction.add(t);
             System.out.println("Unit Price: RM" + price);
+
+            // Update inventory
+            for (int i=0; i<inventory.size(); i++){
+                if (inventory.get(i).get_product_id().equals(productID)){
+                    if (current.getOutlet().equals("KLCC")) {inventory.get(i).set_stock_klcc(inventory.get(i).get_stock_klcc()-qty);}
+                    else {inventory.get(i).set_stock_lot10(inventory.get(i).get_stock_lot10()-qty);}
+                }
+            } 
 
             System.out.print("Are there more items purchased? (Y/N): ");
             String c = input.nextLine();
@@ -69,14 +78,15 @@ public class SalesSystem {
         System.out.print("\nEnter transaction method: ");
         String method = input.nextLine();
 
-        // set all payment methods & append to transaction
+        // Set all payment methods & append to transaction
         for (int i=0; i<new_transaction.size(); i++){
             new_transaction.get(i).set_payment_method(method);
             transaction.add(new_transaction.get(i));
         }
 
-        // write to csv 
+        // Write to csv 
         Transaction.writeCsv(transaction);
+        Inventory.writeCsv(inventory);
 
         System.out.println("Subtotal: RM" + String.format("%.2f", subtotal));
         generateReceipt(current_transaction_id, dateStr, timeStr, customer, subtotal, method);
