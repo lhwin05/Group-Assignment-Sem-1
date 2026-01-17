@@ -78,7 +78,7 @@ public class EditInformation {
             }
         }
 
-        // 4. re-write the whole csv file
+        // 4. write in Inventory.csv
         Inventory.writeCsv(inventory);
         System.out.println("Changes have been made ");
         return;
@@ -120,7 +120,9 @@ public class EditInformation {
             else {choice_transaction = 1;}
         }
         int idx = choice_transaction-1;
+
         Transaction in_useTransaction = found.get(idx);
+        int in_useTransactionId = in_useTransaction.get_transaction_id();
 
         // 4. select to edit 
         int choice_edit;
@@ -132,7 +134,7 @@ public class EditInformation {
             choice_edit = sc.nextInt();
             if (choice_edit < 0 || choice_edit > 4){
                 System.out.println("Invalid choice! ");
-                continue;     // keep looping until a valid choice input
+                continue;     
             }
             else{
                 switch (choice_edit){
@@ -146,17 +148,23 @@ public class EditInformation {
                         String customer_name_edit = sc.nextLine();
 
                         if (customer_name_edit.equals("0")){System.out.println("Edit information cancelled! "); return;}
-                        found.get(idx).set_customer_name(customer_name_edit);
+                        for (int i=0; i<transaction.size(); i++){
+                            if (transaction.get(i).get_transaction_id() == in_useTransactionId){
+                                transaction.get(i).set_customer_name(customer_name_edit);
+                            }
+                        }
                         break;
+
                     case 2:
                         sc.nextLine();
                         System.out.println("\nEnter new model name: ");
                         System.out.println("Enter 0 to ESC ");
+                        int quantity = in_useTransaction.get_quantity();
                         String product_id_before = in_useTransaction.get_product_id();
                         String product_id_edit = sc.nextLine();
 
                         if (product_id_edit.equals("0")){System.out.println("Edit information cancelled! "); return;}
-                        found.get(idx).set_product_id(product_id_edit);
+                        in_useTransaction.set_product_id(product_id_edit);
 
                         // change total
                         for (Product p : products){
@@ -167,47 +175,46 @@ public class EditInformation {
 
                         // change inventory
                         for (int i=0; i<inventory.size(); i++){
-                            // before
+                            // refund (+)
                             if (inventory.get(i).get_product_id().equals(product_id_before)){
                                 if (in_useTransaction.get_outlet().equals("KLCC")) {
-                                    // get back previous stock 
-                                    inventory.get(i).set_stock_klcc(inventory.get(i).get_stock_klcc()+in_useTransaction.get_quantity());
+                                    inventory.get(i).set_stock_klcc(inventory.get(i).get_stock_klcc()+quantity);
                                 }
-                                if (in_useTransaction.get_outlet().equals("Lot 10")) {
-                                    inventory.get(i).set_stock_lot10(inventory.get(i).get_stock_lot10()+in_useTransaction.get_quantity());
+                                if (in_useTransaction.get_outlet().equals("Lot_10")) {
+                                    inventory.get(i).set_stock_lot10(inventory.get(i).get_stock_lot10()+quantity);
                                 }
                             }
 
-                            // after
+                            // sell (-)
                             if (inventory.get(i).get_product_id().equals(product_id_edit)){
                                 if (in_useTransaction.get_outlet().equals("KLCC")) {
-                                    // sell current stock
-                                    inventory.get(i).set_stock_klcc(inventory.get(i).get_stock_klcc()-in_useTransaction.get_quantity());
+                                    inventory.get(i).set_stock_klcc(inventory.get(i).get_stock_klcc()-quantity);
                                 }
-                                if (in_useTransaction.get_outlet().equals("Lot 10")) {
-                                    inventory.get(i).set_stock_lot10(inventory.get(i).get_stock_lot10()-in_useTransaction.get_quantity());
+                                if (in_useTransaction.get_outlet().equals("Lot_10")) {
+                                    inventory.get(i).set_stock_lot10(inventory.get(i).get_stock_lot10()-quantity);
                                 }
                             }
                         } 
                         break;
+
                     case 3: 
                         sc.nextLine();
                         int quantity_before = in_useTransaction.get_quantity();
-                        int quantity_edit;
+                        int quantity_now;
                         while (true){
                             System.out.println("\nEnter new quantity: ");
                             System.out.println("Enter 0 to ESC ");
-                            quantity_edit = Integer.parseInt(sc.nextLine());
-                            if (quantity_edit < 0) {System.out.println("Invalid quantity! "); continue;}
+                            quantity_now = Integer.parseInt(sc.nextLine());
+                            if (quantity_now < 0) {System.out.println("Invalid quantity! "); continue;}
                             break;
                         }
-                        if (quantity_edit == 0){System.out.println("Edit information cancelled! "); return;}
-                        in_useTransaction.set_quantity(quantity_edit);
+                        if (quantity_now == 0){System.out.println("Edit information cancelled! "); return;}
+                        in_useTransaction.set_quantity(quantity_now);
 
                         // change total
                         for (Product p : products){
                             if (p.get_product_id().equals(in_useTransaction.get_product_id())){
-                                in_useTransaction.set_total(quantity_edit*p.get_selling_price());
+                                in_useTransaction.set_total(quantity_now*p.get_selling_price());    
                             }
                         }
 
@@ -215,14 +222,15 @@ public class EditInformation {
                         for (int i=0; i<inventory.size(); i++){
                             if (inventory.get(i).get_product_id().equals(in_useTransaction.get_product_id())){
                                 if (in_useTransaction.get_outlet().equals("KLCC")) {
-                                    inventory.get(i).set_stock_klcc(inventory.get(i).get_stock_klcc()+quantity_before-quantity_edit);
+                                    inventory.get(i).set_stock_klcc(inventory.get(i).get_stock_klcc()+quantity_before-quantity_now);
                                 }
-                                if (in_useTransaction.get_outlet().equals("Lot 10")) {
-                                    inventory.get(i).set_stock_lot10(inventory.get(i).get_stock_lot10()+quantity_before-quantity_edit);
+                                if (in_useTransaction.get_outlet().equals("Lot_10")) {
+                                    inventory.get(i).set_stock_lot10(inventory.get(i).get_stock_lot10()+quantity_before-quantity_now);
                                 }
                             }
                         } 
                         break;
+
                     case 4:
                         sc.nextLine();
                         int payment_method_edit_choice;
@@ -230,48 +238,57 @@ public class EditInformation {
                         System.out.println("1. Credit Card     2. Debit Card     3. Cash     4. E-wallet ");
                         System.out.println("Enter 0 to ESC ");
                         payment_method_edit_choice = Integer.parseInt(sc.nextLine());   
+                        String payment_method="";
 
                         if (payment_method_edit_choice == 0){System.out.println("Edit information cancelled! "); return;}
                         switch (payment_method_edit_choice){
                             case 1: 
-                                found.get(idx).set_payment_method("Credit Card");
+                                payment_method = "Credit Card";
                                 break;
                             case 2:
-                                found.get(idx).set_payment_method("Debit Card");
+                                payment_method = "Debit Card";
                                 break;
                             case 3:
-                                found.get(idx).set_payment_method("Cash");
+                                payment_method = "Cash";
                                 break;
                             case 4:
-                                found.get(idx).set_payment_method("E-wallet");
+                                payment_method = "E-wallet";
                                 break;
                         }
+                        for (int i=0; i<transaction.size(); i++){
+                            if (transaction.get(i).get_transaction_id() == in_useTransactionId){
+                                transaction.get(i).set_payment_method(payment_method);
+                            }
+                        }
                         break;
+    
                 }
                 break;
             }
         }
 
-        // 5. insert filtered transaction back to transaction 
-        int transaction_id = in_useTransaction.get_transaction_id();
-        for (int i=0; i<transaction.size(); i++){
-            if (transaction.get(i).get_transaction_id() == transaction_id) {
-                transaction.set(i, found.get(idx)); 
-                break;
-            }
-        }
-
-        // 6. update csv
-        Transaction.writeCsv(transaction);
-        System.out.println("Changes to transaction has been made");
-
+        // 5. insert altered transaction data + update Inventory.csv
         if (choice_edit == 2 || choice_edit == 3){
+            for (int i=0; i<transaction.size(); i++){
+                if (transaction.get(i).get_transaction_id() == in_useTransactionId) {
+                    transaction.set(i, in_useTransaction); 
+                    break;
+                }
+            }
             Inventory.writeCsv(inventory);
             System.out.println("Changes to inventory has been made");
         }
+
+
+        // 6. update Transaction.csv
+        Transaction.writeCsv(transaction);
+        System.out.println("Changes to transaction has been made");
     }
 
     public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        edit_sales_information(sc);
+        sc.close();
     }
 
 }
